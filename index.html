@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cosmic Atlas | Explore Our Solar System</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&family=Source+Serif+Pro:wght@600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #1a1a2e;
+            --secondary: #16213e;
+            --accent: #0f4c75;
+            --accent-light: #3282b8;
+            --text: #eaeaea;
+            --text-muted: #a8b0c0;
+            --white: #ffffff;
+            --transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: var(--text);
+            line-height: 1.7;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* Typography */
+        h1, h2, h3, h4 {
+            font-family: 'Source Serif Pro', serif;
+            font-weight: 700;
+            color: var(--white);
+        }
+
+        h1 {
+            font-size: 3.2rem;
+            letter-spacing: 1px;
+        }
+
+        h2 {
+            font-size: 2.3rem;
+            margin-bottom: 1.2rem;
+        }
+
+        /* Layout */
+        .container {
+            width: 90%;
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        header {
+            padding: 2.5rem 0 1.5rem;
+            text-align: center;
+        }
+
+        .logo {
+            margin-bottom: 0.8rem;
+        }
+
+        .logo span {
+            color: var(--accent-light);
+        }
+
+        .subtitle {
+            font-weight: 300;
+            font-size: 1.1rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            opacity: 0.8;
+        }
+
+        /* Redesigned Navigation Bar */
+        .cosmic-nav {
+            background: rgba(26, 26, 46, 0.8);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(50, 130, 184, 0.2);
+            border-bottom: 1px solid rgba(50, 130, 184, 0.2);
+            margin: 2.5rem 0;
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: center;
+            position: relative;
+        }
+
+        .planet-menu {
+            display: flex;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            gap: 2px;
+        }
+
+        .planet-item {
+            position: relative;
+        }
+
+        .planet-link {
+            display: block;
+            padding: 16px 22px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            transition: var(--transition);
+            position: relative;
+            z-index: 1;
+        }
+
+        .planet-link:hover,
+        .planet-link.active {
+            color: var(--accent-light);
+        }
+
+        .planet-link.active {
+            font-weight: 600;
+        }
+
+        /* Active indicator */
+        .planet-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(50, 130, 184, 0.1);
+            z-index: -1;
+            transition: var(--transition);
+            border-radius: 4px 4px 0 0;
+        }
+
+        .planet-link.active::before {
+            background: rgba(50, 130, 184, 0.2);
+            height: 100%;
+        }
+
+        .planet-link:hover::before {
+            background: rgba(50, 130, 184, 0.15);
+        }
+
+        /* Main Content */
+        main {
+            padding: 1.5rem 0 5rem;
+        }
+
+        .cosmic-display {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 70vh;
+        }
+
+        @media (min-width: 992px) {
+            .cosmic-display {
+                flex-direction: row;
+                align-items: flex-start;
+            }
+        }
+
+        .planet-showcase {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 500px;
+            position: relative;
+        }
+
+        .planet-container {
+            width: 320px;
+            height: 320px;
+            position: relative;
+            perspective: 1000px;
+            border-radius: 50%;
+            overflow: hidden;
+            box-shadow: 0 0 30px rgba(50, 130, 184, 0.2);
+            border: 3px solid rgba(50, 130, 184, 0.3);
+        }
+
+        .planet-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.8s ease;
+        }
+
+        /* Saturn's rings - special case */
+        .saturn-container {
+            position: relative;
+        }
+
+        .saturn-rings {
+            position: absolute;
+            width: 450px;
+            height: 60px;
+            border-radius: 50%;
+            border: 8px solid rgba(50, 130, 184, 0.4);
+            border-top: 8px solid transparent;
+            border-bottom: 8px solid transparent;
+            transform: rotateX(75deg) scale(1.2);
+            z-index: -1;
+            left: -65px;
+            top: 130px;
+        }
+
+        .planet-info {
+            flex: 1;
+            padding: 2rem;
+            background: rgba(26, 26, 46, 0.6);
+            border-radius: 16px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(50, 130, 184, 0.15);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            margin: 2rem 0;
+        }
+
+        @media (min-width: 992px) {
+            .planet-info {
+                margin: 0 0 0 2.5rem;
+            }
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.2rem;
+            margin: 1.8rem 0;
+        }
+
+        @media (min-width: 768px) {
+            .info-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .info-item {
+            padding: 12px 15px;
+            border-left: 2px solid var(--accent-light);
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: 6px;
+            transition: var(--transition);
+        }
+
+        .info-label {
+            font-size: 0.85rem;
+            opacity: 0.7;
+            margin-bottom: 0.4rem;
+            display: block;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .info-value {
+            font-size: 1.15rem;
+            font-weight: 600;
+            color: var(--accent-light);
+        }
+
+        .planet-description {
+            line-height: 1.8;
+            font-weight: 400;
+            padding: 12px 0;
+            border-top: 1px solid rgba(50, 130, 184, 0.15);
+            margin-top: 1.8rem;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 2.5rem 0;
+            margin-top: 2.5rem;
+            border-top: 1px solid rgba(50, 130, 184, 0.15);
+            font-weight: 300;
+            opacity: 0.7;
+            font-size: 0.9rem;
+        }
+
+        /* Animations */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(15px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+
+        .fade-in.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .zoom-in {
+            transform: scale(1.05);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 991px) {
+            h1 {
+                font-size: 2.6rem;
+            }
+            
+            h2 {
+                font-size: 2rem;
+            }
+            
+            .planet-container {
+                width: 280px;
+                height: 280px;
+            }
+        }
+
+        @media (max-width: 767px) {
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            h2 {
+                font-size: 1.7rem;
+            }
+            
+            .planet-info {
+                margin: 2rem 0;
+            }
+            
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .planet-link {
+                padding: 14px 16px;
+                font-size: 0.9rem;
+            }
+            
+            .saturn-rings {
+                width: 400px;
+                left: -50px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo fade-in">
+                <h1>Cosmic Atlas</h1>
+            </div>
+            <p class="subtitle fade-in">A Journey Through Our Solar System</p>
+        </div>
+    </header>
+
+    <!-- Redesigned Navigation Bar -->
+    <nav class="cosmic-nav">
+        <div class="container">
+            <div class="nav-container fade-in">
+                <ul class="planet-menu" id="planet-menu">
+                    <li class="planet-item">
+                        <a href="#" class="planet-link active" data-planet="earth">Earth</a>
+                    </li>
+                    <li class="planet-item">
+                        <a href="#" class="planet-link" data-planet="mercury">Mercury</a>
+                    </li>
+                    <li class="planet-item">
+                        <a href="#" class="planet-link" data-planet="venus">Venus</a>
+                    </li>
+                    <li class="planet-item">
+                        <a href="#" class="planet-link" data-planet="mars">Mars</a>
+                    </li>
+                    <li class="planet-item">
+                        <a href="#" class="planet-link" data-planet="jupiter">Jupiter</a>
+                    </li>
+                    <li class="planet-item">
+                        <a href="#" class="planet-link" data-planet="saturn">Saturn</a>
+                    </li>
+                    <li class="planet-item">
+                        <a href="#" class="planet-link" data-planet="uranus">Uranus</a>
+                    </li>
+                    <li class="planet-item">
+                        <a href="#" class="planet-link" data-planet="neptune">Neptune</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <div class="container">
+            <section class="cosmic-display">
+                <div class="planet-showcase fade-in">
+                    <div class="planet-container" id="planet-container">
+                        <img src="https://images.nasa.gov/images/as17-148-22727~large" alt="Earth" class="planet-image" id="planet-image">
+                        <div class="saturn-rings" id="saturn-rings" style="display: none;"></div>
+                    </div>
+                </div>
+                
+                <div class="planet-info fade-in">
+                    <h2 id="planet-title">Earth</h2>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <span class="info-label">Diameter</span>
+                            <span class="info-value" id="diameter">12,742 km</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Distance from Sun</span>
+                            <span class="info-value" id="distance">149.6 million km</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Orbital Period</span>
+                            <span class="info-value" id="orbital-period">365.25 days</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Rotation Period</span>
+                            <span class="info-value" id="rotation-period">23.9 hours</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Mass</span>
+                            <span class="info-value" id="mass">5.97 × 10^24 kg</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Moons</span>
+                            <span class="info-value" id="moons">1</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Temperature Range</span>
+                            <span class="info-value" id="temperature">-88 to 58°C</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Atmosphere</span>
+                            <span class="info-value" id="atmosphere">Nitrogen, Oxygen</span>
+                        </div>
+                    </div>
+                    <p class="planet-description" id="description">
+                        Earth is the third planet from the Sun and the only astronomical object known to harbor life. About 29.2% of Earth's surface is land consisting of continents and islands, while the remaining 70.8% is covered with water.
+                    </p>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>© 2023 Cosmic Atlas. All rights reserved.</p>
+            <p>Data and images sourced from NASA and public domain astronomical archives</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const planets = {
+                mercury: {
+                    name: "Mercury",
+                    diameter: "4,880 km",
+                    distance: "57.9 million km",
+                    "orbital-period": "88 days",
+                    "rotation-period": "58.6 days",
+                    mass: "3.30 × 10^23 kg",
+                    moons: "0",
+                    temperature: "-173 to 427°C",
+                    atmosphere: "Trace amounts of oxygen, sodium, hydrogen, helium",
+                    description: "Mercury is the smallest and innermost planet in the Solar System. It has a very thin atmosphere and experiences extreme temperature variations due to its proximity to the Sun and lack of atmosphere to retain heat.",
+                    image: "mercury.jpg"
+                },
+                venus: {
+                    name: "Venus",
+                    diameter: "12,104 km",
+                    distance: "108.2 million km",
+                    "orbital-period": "225 days",
+                    "rotation-period": "243 days",
+                    mass: "4.87 × 10^24 kg",
+                    moons: "0",
+                    temperature: "462°C",
+                    atmosphere: "Carbon dioxide, nitrogen",
+                    description: "Venus is the second planet from the Sun and is similar in size and structure to Earth. It has a thick, toxic atmosphere that traps heat in a runaway greenhouse effect, making it the hottest planet in our solar system.",
+                    image: "mercury.jpg"
+                },
+                earth: {
+                    name: "Earth",
+                    diameter: "12,742 km",
+                    distance: "149.6 million km",
+                    "orbital-period": "365.25 days",
+                    "rotation-period": "23.9 hours",
+                    mass: "5.97 × 10^24 kg",
+                    moons: "1",
+                    temperature: "-88 to 58°C",
+                    atmosphere: "Nitrogen, Oxygen",
+                    description: "Earth is the third planet from the Sun and the only astronomical object known to harbor life. About 29.2% of Earth's surface is land consisting of continents and islands, while the remaining 70.8% is covered with water.",
+                    image: "earth.jpg"
+                },
+                mars: {
+                    name: "Mars",
+                    diameter: "6,779 km",
+                    distance: "227.9 million km",
+                    "orbital-period": "687 days",
+                    "rotation-period": "24.6 hours",
+                    mass: "6.39 × 10^23 kg",
+                    moons: "2",
+                    temperature: "-153 to 20°C",
+                    atmosphere: "Carbon dioxide, nitrogen, argon",
+                    description: "Mars is the fourth planet from the Sun and the second-smallest planet in the Solar System. It is often referred to as the 'Red Planet' due to its reddish appearance, which comes from iron oxide (rust) prevalent on its surface.",
+                    image: "mars.jpg"
+                },
+                jupiter: {
+                    name: "Jupiter",
+                    diameter: "139,820 km",
+                    distance: "778.5 million km",
+                    "orbital-period": "11.9 years",
+                    "rotation-period": "9.9 hours",
+                    mass: "1.90 × 10^27 kg",
+                    moons: "95+",
+                    temperature: "-145°C",
+                    atmosphere: "Hydrogen, Helium",
+                    description: "Jupiter is the fifth planet from the Sun and the largest in the Solar System. It's a gas giant with a mass more than two and a half times that of all the other planets combined. It has a prominent storm known as the Great Red Spot.",
+                    image: "https://images.nasa.gov/images/PIA00011~medium"
+                },
+                saturn: {
+                    name: "Saturn",
+                    diameter: "116,460 km",
+                    distance: "1.43 billion km",
+                    "orbital-period": "29.5 years",
+                    "rotation-period": "10.7 hours",
+                    mass: "5.68 × 10^26 kg",
+                    moons: "146+",
+                    temperature: "-178°C",
+                    atmosphere: "Hydrogen, Helium",
+                    description: "Saturn is the sixth planet from the Sun and the second-largest in the Solar System. It's known for its prominent ring system that consists of ice particles, rocky debris, and dust, making it one of the most visually striking planets.",
+                    image: "saturn.jpg"
+                },
+                uranus: {
+                    name: "Uranus",
+                    diameter: "50,724 km",
+                    distance: "2.87 billion km",
+                    "orbital-period": "84 years",
+                    "rotation-period": "17.2 hours",
+                    mass: "8.68 × 10^25 kg",
+                    moons: "27",
+                    temperature: "-216°C",
+                    atmosphere: "Hydrogen, Helium, Methane",
+                    description: "Uranus is the seventh planet from the Sun and has the third-largest planetary radius and fourth-largest planetary mass in the Solar System. It rotates on its side with an axial tilt of 98 degrees, making its seasons extreme.",
+                    image: "https://images.nasa.gov/images/PIA18613~medium"
+                },
+                neptune: {
+                    name: "Neptune",
+                    diameter: "49,244 km",
+                    distance: "4.50 billion km",
+                    "orbital-period": "164.8 years",
+                    "rotation-period": "16.1 hours",
+                    mass: "1.02 × 10^26 kg",
+                    moons: "14",
+                    temperature: "-214°C",
+                    atmosphere: "Hydrogen, Helium, Methane",
+                    description: "Neptune is the eighth and farthest planet from the Sun. It is the fourth-largest planet by diameter and the third-largest by mass. It has the strongest winds in the solar system, reaching speeds of up to 2,100 km/h.",
+                    image: "pluto.jpg"
+                }
+            };
+
+            // DOM elements
+            const planetMenu = document.getElementById('planet-menu');
+            const planetImage = document.getElementById('planet-image');
+            const planetContainer = document.getElementById('planet-container');
+            const saturnRings = document.getElementById('saturn-rings');
+            const planetTitle = document.getElementById('planet-title');
+            const diameter = document.getElementById('diameter');
+            const distance = document.getElementById('distance');
+            const orbitalPeriod = document.getElementById('orbital-period');
+            const rotationPeriod = document.getElementById('rotation-period');
+            const mass = document.getElementById('mass');
+            const moons = document.getElementById('moons');
+            const temperature = document.getElementById('temperature');
+            const atmosphere = document.getElementById('atmosphere');
+            const description = document.getElementById('description');
+
+            // Add fade-in animation to elements when they come into view
+            const fadeElements = document.querySelectorAll('.fade-in');
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                    }
+                });
+            }, { threshold: 0.1 });
+            
+            fadeElements.forEach(el => {
+                observer.observe(el);
+            });
+
+            // Set initial planet
+            updatePlanetDisplay('earth');
+
+            // Event listener for planet navigation
+            planetMenu.addEventListener('click', function(e) {
+                e.preventDefault();
+                if (e.target.classList.contains('planet-link')) {
+                    // Remove active class from all links
+                    document.querySelectorAll('.planet-link').forEach(link => {
+                        link.classList.remove('active');
+                    });
+                    
+                    // Add active class to clicked link
+                    e.target.classList.add('active');
+                    
+                    // Get planet key
+                    const planetKey = e.target.getAttribute('data-planet');
+                    
+                    // Update display
+                    updatePlanetDisplay(planetKey);
+                }
+            });
+
+            // Function to update planet display
+            function updatePlanetDisplay(planetKey) {
+                const planet = planets[planetKey];
+                
+                // Update planet image
+                planetImage.src = planet.image;
+                planetImage.alt = planet.name;
+                
+                // Show/hide Saturn's rings
+                if (planetKey === 'saturn') {
+                    saturnRings.style.display = 'block';
+                    planetContainer.classList.add('saturn-container');
+                } else {
+                    saturnRings.style.display = 'none';
+                    planetContainer.classList.remove('saturn-container');
+                }
+                
+                // Add zoom animation
+                planetImage.classList.remove('zoom-in');
+                void planetImage.offsetWidth; // Trigger reflow
+                planetImage.classList.add('zoom-in');
+                
+                // Update information
+                planetTitle.textContent = planet.name;
+                
+                diameter.textContent = planet.diameter;
+                distance.textContent = planet.distance;
+                orbitalPeriod.textContent = planet["orbital-period"];
+                rotationPeriod.textContent = planet["rotation-period"];
+                mass.textContent = planet.mass;
+                moons.textContent = planet.moons;
+                temperature.textContent = planet.temperature;
+                atmosphere.textContent = planet.atmosphere;
+                description.textContent = planet.description;
+            }
+        });
+    </script>
+</body>
+</html>
